@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from mpi4py import MPI
 
 
 
@@ -341,3 +342,34 @@ def save_mpiio(comm, fn, g_kl):
     file.Write_all(g_kl.copy())
     filetype.Free()
     file.Close()
+
+
+
+def communicate(grid, cartcomm, L) :
+
+    right_src, right_dst, left_src, left_dst, up_src, up_dst, down_src, down_dst = L
+    # sending and receiving data
+    recv_buffer = np.copy(grid[:, 0, :])
+    send_buffer = np.copy(grid[:, -2, :])
+    cartcomm.Sendrecv(send_buffer, up_dst, recvbuf=recv_buffer, source=up_src)
+    grid[:, 0, :] = recv_buffer
+
+    # send to south, receive from north
+    recv_buffer = np.copy(grid[:, -1, :])
+    send_buffer = np.copy(grid[:, 1, :])
+    cartcomm.Sendrecv(send_buffer, down_dst, recvbuf=recv_buffer, source=down_src)
+    grid[:, -1, :] = recv_buffer
+
+    # send to the west, receive from the east
+    recv_buffer = np.copy(grid[:, :, -1])
+    send_buffer = np.copy(grid[:, :, 1])
+    cartcomm.Sendrecv(send_buffer, left_dst, recvbuf=recv_buffer, source=left_src)
+    grid[:, :, -1] = recv_buffer
+
+    # send to east, receive from the west
+    recv_buffer = np.copy(grid[:, :, 0])
+    send_buffer = np.copy(grid[:, :, -2])
+    cartcomm.Sendrecv(send_buffer, right_dst, recvbuf=recv_buffer, source=right_src)
+    grid[:, :, 0] = recv_buffer
+
+    return grid
