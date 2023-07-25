@@ -30,7 +30,7 @@ def plot_velocity() :
     plt.legend()
     plt.xlabel("X axis")
     plt.ylabel("Y axis")
-    plt.savefig("figures/ml6_re1000_step100000.png")
+    plt.show()
     plt.close()
 
 if __name__ == '__main__' :
