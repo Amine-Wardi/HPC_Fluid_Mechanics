@@ -107,11 +107,10 @@ if __name__ == '__main__' :
     rho_0 = np.ones((subgrid_shape_x, subgrid_shape_y))
     u_0 = np.zeros((2, subgrid_shape_x, subgrid_shape_y))
     grid = equilibrium_distribution(rho_0, u_0)
-    print(grid.shape)
 
     for i in range(timesteps) :
         if rank == 0 :
-            print(rank, "timestep =", i, '/', timesteps, end='\r')
+            print("rank :", rank, "timestep =", i, '/', timesteps, end='\r')
         u = velocity(grid, density(grid))
 
         grid = communicate(grid, cartcomm, L)
@@ -138,13 +137,17 @@ if __name__ == '__main__' :
             else :
                 grid = streaming(grid, c, collision=collision_func, boundary=None)
 
-    # vel = u[1:-1, 1:-1]
-    # print(u)
-    # save_mpiio(cartcomm, str(rank)+"ux.npy", np.moveaxis(vel[0], 0, 1))
-    # save_mpiio(cartcomm, str(rank)+"uy.npy", np.moveaxis(vel[1], 0, 1))
-
 
     if rank == 0 :
         end_time = time.time()
         print('{} iterations took {}s'.format(timesteps, end_time - start_time))
 
+    
+    rows, columns = u[0].shape
+
+    vel = u[:, 1:rows-1, 1:columns-1]
+    u_full_grid = np.zeros((2, NX, NY))
+    comm.Gather(np.ascontiguousarray(vel), u_full_grid, root = 0)
+    if rank == 0 :
+        with open('u_4.npy', 'wb') as file :
+            np.save(file, u_full_grid)
