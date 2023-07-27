@@ -2,7 +2,7 @@ import numpy as np
 from mpi4py import MPI
 from utils import c, streaming, equilibrium_distribution, density, velocity, collision_term, box_sliding_top_boundary, \
                   top_boundaries, bottom_boundaries, right_boundaries, left_boundaries, right_bottom_boundary, right_top_boundary, \
-                  left_bottom_boundary, left_top_boundary, save_mpiio, communicate
+                  left_bottom_boundary, left_top_boundary, communicate
 import argparse
 import time
 
@@ -117,15 +117,16 @@ if __name__ == '__main__' :
         end_time = time.time()
         print('{} iterations took {}s'.format(timesteps, end_time - start_time))
 
-    rows, columns = u[0].shape
-    vel = u[:, 1:rows-1, 1:columns-1]
-    
-    if rank == 0 :
-        u_full_grid = np.zeros((comm.Get_size(), 2, subgrid_shape_x-2, subgrid_shape_y-2), dtype=np.float64)
-    else:
-        u_full_grid = None
 
-    comm.Gather(np.ascontiguousarray(vel), u_full_grid, root = 0)
-    if rank == 0 :
-        with open('u_4.npy', 'wb') as file :
-            np.save(file, u_full_grid)
+    # rows, columns = u[0].shape
+    # vel = u[:, 1:rows-1, 1:columns-1]
+    
+    # if rank == 0 :
+    #     u_full_grid = np.zeros((comm.Get_size(), 2, subgrid_shape_x-2, subgrid_shape_y-2), dtype=np.float64)
+    # else:
+    #     u_full_grid = None
+
+    # comm.Gather(np.ascontiguousarray(vel), u_full_grid, root = 0)
+    # if rank == 0 :
+    #     with open('u_4.npy', 'wb') as file :
+    #         np.save(file, u_full_grid)
