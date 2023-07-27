@@ -8,37 +8,13 @@ import time
 
 
 
-# allrcoords = comm.gather(rcoords, root=0)
-# allDestSourBuf = np.zeros(size*8, dtype=int)
-# print(rank, L, allDestSourBuf)
-# comm.Gather(L, allDestSourBuf, root=0)
-# print(rank, L, allDestSourBuf)
-
-# if rank == 0 :
-#     print(' ')
-#     cartarray = np.ones((node_shape_y, node_shape_x),dtype=int)
-#     allDestSour = np.array(allDestSourBuf).reshape((size, 8))
-#     for i in np.arange(size):
-#         cartarray[allrcoords[i][0],allrcoords[i][1]] = i
-#         print('Rank {} all destinations and sources {}'.format(i,allDestSour[i,:]))
-#         sR,dR,sL,dL,sU,dU,sD,dD = allDestSour[i]  
-#         print('Rank {} is at {}'.format(i,allrcoords[i]))
-#         print('sour/dest right {} {}'.format(sR,dR))
-#         print('sour/dest left  {} {}'.format(sL,dL))  
-#         print('sour/dest up    {} {}'.format(sU,dU))
-#         print('sour/dest down  {} {}'.format(sD,dD))
-#         print('[stdout:',i,']',allDestSour[i])
-#     print(' ')
-#     print(cartarray)
-
-
 
 
 if __name__ == '__main__' :
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-gs', '--grid_size', nargs='+', type=int, default=(300, 300))
-    parser.add_argument("-ts", "--time_steps", type=int, default=10000)
+    parser.add_argument("-ts", "--time_steps", type=int, default=100000)
 
     args = parser.parse_args()
 
@@ -101,7 +77,6 @@ if __name__ == '__main__' :
     up = up_dst < 0 
     down = down_dst < 0 
 
-
     omega = 1.7
     collision_func = lambda grid : collision_term(grid, omega)
     rho_0 = np.ones((subgrid_shape_x, subgrid_shape_y))
@@ -142,11 +117,14 @@ if __name__ == '__main__' :
         end_time = time.time()
         print('{} iterations took {}s'.format(timesteps, end_time - start_time))
 
-    
     rows, columns = u[0].shape
-
     vel = u[:, 1:rows-1, 1:columns-1]
-    u_full_grid = np.zeros((2, NX, NY))
+    
+    if rank == 0 :
+        u_full_grid = np.zeros((comm.Get_size(), 2, subgrid_shape_x-2, subgrid_shape_y-2), dtype=np.float64)
+    else:
+        u_full_grid = None
+
     comm.Gather(np.ascontiguousarray(vel), u_full_grid, root = 0)
     if rank == 0 :
         with open('u_4.npy', 'wb') as file :
