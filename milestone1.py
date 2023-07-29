@@ -23,6 +23,9 @@ def create_f(shape=(9, 300, 300), num=18000) :
 
 
 def create_test_grid():
+    """
+    creates a grid with one point in the middle that has a higher density
+    """
     shape = (9, 30, 30)
     grid = np.zeros(shape)
     for x in range(shape[1]) :
@@ -34,9 +37,11 @@ def create_test_grid():
     return grid 
 
 if __name__ == '__main__' :
+    # Plotting an example grid
     grid_example = create_f((9, 15, 10), int(10*15*0.2))
     plot_grid(grid_example)
-    num = 1
+
+    # Showing the streaming result
     test_grid = create_test_grid()
     plot_grid(test_grid)
     test_grid = streaming(test_grid, c, test=True)

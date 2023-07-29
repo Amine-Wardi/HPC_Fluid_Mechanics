@@ -18,14 +18,14 @@ if __name__ == '__main__' :
 
     args = parser.parse_args()
 
+    # Initializing the Communicator
     comm = MPI.COMM_WORLD
     size = comm.Get_size()
     rank = comm.Get_rank()
 
     timesteps = args.time_steps
 
-    # Let us take a square simulation domain that can be divided 
-    # by the number of cores and results in a square subdomain 
+
     NX = args.grid_size[0]
     NY = args.grid_size[1]
     if NX < NY :
@@ -46,15 +46,15 @@ if __name__ == '__main__' :
         if rank == 0 :
             print('In the case of equal size we divide the processes as {} and {}'.format(node_shape_x, node_shape_y))
 
-    
+    # Getting the subgrid shape, we add the ghost cells
     subgrid_shape_x = NX//node_shape_x+2
     subgrid_shape_y = NY//node_shape_y+2
-    # boundary_k=[False,False,False,False] # This is for hard boundaries WHY 4  
     
     # We need a Cartesian communicator
     cartcomm = comm.Create_cart(dims=[node_shape_x, node_shape_y], periods=(False, False), reorder=False)
     rcoords = cartcomm.Get_coords(rank)
 
+    # Source and Destinations for all the directions
     right_src, right_dst = cartcomm.Shift(1, 1)
     left_src, left_dst = cartcomm.Shift(1, -1)
     up_src, up_dst = cartcomm.Shift(0, -1)
@@ -89,7 +89,6 @@ if __name__ == '__main__' :
         u = velocity(grid, density(grid))
 
         grid = communicate(grid, cartcomm, L)
-        # grid must diveded at least to 4 subgrids.
         if size == 1 :
             grid = streaming(grid, c, collision=collision_func, boundary=box_sliding_top_boundary)
         else :
@@ -117,6 +116,8 @@ if __name__ == '__main__' :
         end_time = time.time()
         print('{} iterations took {}s'.format(timesteps, end_time - start_time))
 
+
+    # The code below gathers the velocity grid for all the processors and save it in a file
 
     # rows, columns = u[0].shape
     # vel = u[:, 1:rows-1, 1:columns-1]

@@ -79,15 +79,18 @@ def animation_grid(create_f, collision=None, frames=200, save=False, name='') :
     This function was made by using Chat GPT 3
     """
     grid = create_f()
+    # Calculating density grid
     density_grid = density(grid)
     density_grid = np.moveaxis(density_grid, 0, 1)
     fig = plt.figure()
+    # Plot the density grid
     im = plt.imshow(density_grid, animated=True, cmap='Blues')
     plt.gca().invert_yaxis()
     count = 0
     def update_grid(frame) :
         nonlocal grid, count
         count += 1
+        # Streaming operator
         if collision is not None :
             grid = streaming(grid, c, collision, test=True)
         else :
@@ -97,6 +100,7 @@ def animation_grid(create_f, collision=None, frames=200, save=False, name='') :
         im.set_array(frame)
         print('frame :', count, "/", frames, end='\r')
         return im,
+    # Updating the frames for the number of times desired
     animate = FuncAnimation(fig, update_grid, frames=frames)
     fig.colorbar(im)
     if save :
