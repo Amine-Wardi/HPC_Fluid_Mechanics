@@ -23,12 +23,12 @@ def plot_velocity() :
         grid = streaming(grid, c, collision=collision_func, boundary=fixed_boundary_conditions, pressure=pressure_condtions, test=True)
 
     density_mean = np.mean(density(grid))
-    theory_velocity = np.array([(1/2)*(delta_p/(8*viscosity*density_mean))*y*(y-shape[2]) for y in range(shape[2])])
+    theory_velocity = np.array([(1/2)*(delta_p/(9*viscosity*density_mean))*y*(y-shape[2]) for y in range(shape[2])])
     plt.plot(theory_velocity, label="theory")
     plt.legend()
     plt.xlabel("Y axis")
     plt.ylabel("Velocity")
-    plt.savefig("figures/test.png")
+    plt.show()
     plt.close()
 
 
