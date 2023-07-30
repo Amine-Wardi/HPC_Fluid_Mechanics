@@ -107,7 +107,6 @@ def plot_wave_amplitude() :
     plt.legend()
     plt.xlabel("X axis")
     plt.ylabel("Wave Amplitude")
-    plt.savefig('figures/wave_amplitude.png')
 
     plt.show()
 
@@ -161,12 +160,11 @@ def plot_viscosity() :
     plt.legend()
     plt.xlabel("omega")
     plt.ylabel("viscosity")
-    plt.savefig("figures/viscosity.png")
     plt.show()
 
 
 if __name__ == '__main__' :
-    #animation(create_sinus_density, collision_func)  #rho.mp4 in figures/
+    # animation(create_sinus_density, collision_func)  #rho.mp4 in figures/
     plot_amplitude_velocity()
     plot_amplitude_density()
     plot_wave_amplitude()
