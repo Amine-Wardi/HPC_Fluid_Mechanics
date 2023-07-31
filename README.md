@@ -34,7 +34,7 @@ Where file_name can be one the milestone files.
 
 To run the sliding lid experiment in parallel, run the following command :
 ```
-mpirun -n 4 python3 milestone7.py 
+mpirun -n 4 python3 src/milestone7.py 
 ```
 
 The number after -n is the number of processors.
