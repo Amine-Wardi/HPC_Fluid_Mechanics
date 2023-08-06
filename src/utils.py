@@ -7,7 +7,7 @@ from mpi4py import MPI
 
 #--------------------------------------------------- Milestone 1 ---------------------------------------------------#
 
-# 
+# Velocity set
 c = np.array([[0, 1, 0, -1, 0, 1, -1, -1, 1],
               [0, 0, 1, 0, -1, 1, 1, -1, -1]])
 
@@ -431,27 +431,27 @@ def communicate(grid: np.ndarray, cartcomm: MPI.Cartcomm, L: list) -> np.ndarray
     right_src, right_dst, left_src, left_dst, up_src, up_dst, down_src, down_dst = L
     
     # Send to right which is destination rigth and receive from left which is source right
-    recv_buffer = np.copy(grid[:, :, 0])
-    send_buffer = np.copy(grid[:, :, -2])
-    cartcomm.Sendrecv(send_buffer, up_dst, recvbuf=recv_buffer, source=up_src)
-    grid[:, :, 0] = recv_buffer
+    rb = np.copy(grid[:, :, 0])
+    sb = np.copy(grid[:, :, -2])
+    cartcomm.Sendrecv(sb, up_dst, recvbuf=rb, source=up_src)
+    grid[:, :, 0] = rb
 
     # Send to the bottom and receive from the top
-    recv_buffer = np.copy(grid[:, :, -1])
-    send_buffer = np.copy(grid[:, :, 1])
-    cartcomm.Sendrecv(send_buffer, down_dst, recvbuf=recv_buffer, source=down_src)
-    grid[:, :, -1] = recv_buffer
+    rb = np.copy(grid[:, :, -1])
+    sb = np.copy(grid[:, :, 1])
+    cartcomm.Sendrecv(sb, down_dst, recvbuf=rb, source=down_src)
+    grid[:, :, -1] = rb
 
     # Send to the left and receive from the right
-    recv_buffer = np.copy(grid[:, -1, :])
-    send_buffer = np.copy(grid[:, 1, :])
-    cartcomm.Sendrecv(send_buffer, left_dst, recvbuf=recv_buffer, source=left_src)
-    grid[:, -1, :] = recv_buffer
+    rb = np.copy(grid[:, -1, :])
+    sb = np.copy(grid[:, 1, :])
+    cartcomm.Sendrecv(sb, left_dst, recvbuf=rb, source=left_src)
+    grid[:, -1, :] = rb
 
     # Send to the right and receive from the left
-    recv_buffer = np.copy(grid[:, 0, :])
-    send_buffer = np.copy(grid[:, -2, :])
-    cartcomm.Sendrecv(send_buffer, right_dst, recvbuf=recv_buffer, source=right_src)
-    grid[:, 0, :] = recv_buffer
+    rb = np.copy(grid[:, 0, :])
+    sb = np.copy(grid[:, -2, :])
+    cartcomm.Sendrecv(sb, right_dst, recvbuf=rb, source=right_src)
+    grid[:, 0, :] = rb
 
     return grid
