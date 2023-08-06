@@ -116,9 +116,6 @@ sympy==1.10.1
 tensorboard==2.11.2
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
-tensorflow-estimator==2.11.0
-tensorflow-macos==2.11.0
-tensorflow-metal==0.7.1
 termcolor==2.2.0
 terminado==0.12.1
 testpath==0.5.0
